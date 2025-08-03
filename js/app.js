@@ -45,7 +45,7 @@ window.jsPDF = window.jspdf.jsPDF
         doc.setFont("Arial", "normal")
         doc.text(productCode, pageWidth / 2, toPt(32), {align: "center"})
         if (vesselName) {
-            doc.text(`Vessel name: `, toPt(2), toPt(37))
+            doc.text(`Vessel name: ${vesselName}`, toPt(2), toPt(37))
         }
         doc.text(assaPoSo, toPt(2), toPt(42))
         doc.setFont("Arial", "bold")
@@ -103,7 +103,7 @@ window.jsPDF = window.jspdf.jsPDF
             doc.setFontSize(17)
             doc.text(productCode, pageWidth / 2, toPt(44), {align: "center"})
             if (vesselName) {
-                doc.text(`Vessel name: `, toPt(3), toPt(50))
+                doc.text(`Vessel name: ${vesselName}`, toPt(3), toPt(50))
             }
             doc.text(assaPoSo, toPt(3), toPt(57))
             doc.text(tlsOrder, toPt(3), toPt(64))
