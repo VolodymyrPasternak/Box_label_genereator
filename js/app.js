@@ -24,7 +24,7 @@ window.jsPDF = window.jspdf.jsPDF
 
         const logo = document.getElementById("logo")
         const image = new Image()
-        image.src = "../img/assa_logo.png"
+        image.src = "img/assa_logo.png"
     
       // Створюємо PDF: розміри 8 см x 5 см (1 см ≈ 28.346 pt)
         const doc = new jsPDF({
