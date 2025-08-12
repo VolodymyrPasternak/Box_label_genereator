@@ -3,181 +3,149 @@
 <head>
     <meta charset="UTF-8" />
     <title>Carton label Generator</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- <script src="js/jspdf.umd.min.js"></script> -->
+    <script src="js/jspdf.umd.min.js"></script>
     <script>  window.jsPDF = window.jspdf.jsPDF</script>
-    <script src="js/arial_normal.js"></script>
-    <script src="js/arial_bold.js"></script>
-    <script src="js/app.js"></script>
-    <style>
-        body { font-family: sans-serif; margin: 2rem; }
-        label { display: block; margin-top: 1rem; }
-        input { width: 100%; padding: 0.5rem; margin-top: 0.5rem; }
-        button { margin-top: 1.5rem; padding: 0.75rem 1.5rem; }
-    </style>
+    <script src="js/arial_normal.js?v=6"></script>
+    <script src="js/arial_bold.js?v=6"></script>
+    <script src="js/app.js" defer></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
 </head>
 <body>
-  <h2>Carton label Generator</h2>
-    <img id="logo" src="img/assa_logo.png" hidden />
-
-    <label>
-        Enter MXP number
-        <input type="text" id="mxp" placeholder="Enter MXP number" />
-    </label>
-    <label>
-        Enter project name:
-        <input type="text" id="projectName" placeholder="Enter project name:" />
-    </label>
-    <label>
-        Enter product code:
-        <input type="text" id="productCode" placeholder="Enter product code:" />
-    </label>
-     <label>
-        Enter Vessel name (if required):
-        <input type="text" id="vesselName" placeholder="Enter Vessel name (if required):" />
-    </label>
-    <label>
-        Enter PO/SO numbers Assa Abloy:
-        <input type="text" id="assaPoSo" placeholder="Enter PO/SO numbers Assa Abloy:" />
-    </label>
-    <label>
-        Enter TLS oredr number (or customer):
-        <input type="text" id="tlsOrder" placeholder="Enter TLS oredr number:" />
-    </label>
-    <label>
-        Enter quantity of the cards in a box:
-        <input type="text" id="inBoxQuantity" placeholder="Enter quantity of the cards in a box (pcs.):" value="3000"/>
-    </label>
-    <label>
-        Enter total cards cards quantity:
-        <input type="text" id="quantityInOrder" placeholder="Enter total cards cards quantity (pcs.):"/>
-    </label>
-    <button type="button" onclick="generateInnerLablePDF()">Inner box label</button>
-    <button type="button" onclick="generateOuterLablePDF()">Outer carton label</button>
-
-  <script>
-    // window.jsPDF = window.jspdf.jsPDF
-
-    // function toPt(mm) {
-    //     let result = mm * 2.83465
-    //     return result
-    // }
-
-    // async function generateInnerLablePDF() {
-    //     const { jsPDF } = window.jspdf;
-
-    //     // const mxp = 1287632
-    //     // const projectName = "Alma Cruises\nAlma Cruises"
-    //     // const productCode = "H-ALMACRU-0224"
-    //     // const vesselName = "Some"
-    //     // const assaPoSo = "PO 4500044551 / SO 5000066945"
-    //     // const tlsOrder = "NL013031"
-    //     const mxp = document.getElementById("mxp").value.toUpperCase()
-    //     const projectName = document.getElementById("projectName").value
-    //     const productCode = document.getElementById("productCode").value.toUpperCase()
-    //     const vesselName = document.getElementById("vesselName").value
-    //     const assaPoSo = document.getElementById("assaPoSo").value.toUpperCase()
-    //     const tlsOrder = document.getElementById("tlsOrder").value.toUpperCase()
-    //     const inBoxQuantity = 200
-
-    //     const logo = document.getElementById("logo")
-    //     const image = new Image()
-    //     image.src = "img/assa_logo.png"
-    
-    //   // Створюємо PDF: розміри 8 см x 5 см (1 см ≈ 28.346 pt)
-    //     const doc = new jsPDF({
-    //         unit: "pt",
-    //         format: [toPt(80), toPt(50)], // 8x5 см
-    //         orientation: "landscape",
-    //     });
-
-    //     const pageWidth = doc.internal.pageSize.getWidth()
-    //     const maxTextWidth = pageWidth - toPt(6)
-
-    //     doc.setFont("Arial", "normal")   
-    //     doc.setFontSize(13)
-    //     doc.text(`MXP# ${mxp}`, toPt(2), toPt(16))
-    //     const wrappedText = doc.splitTextToSize(projectName, maxTextWidth)
-    //     doc.setFont("Arial", "bold")
-    //     doc.text(wrappedText, pageWidth / 2, toPt(21), {align: "center"})
-    //     doc.setFont("Arial", "normal")
-    //     doc.text(productCode, pageWidth / 2, toPt(32), {align: "center"})
-    //     if (vesselName) {
-    //         doc.text(`Vessel name: `, toPt(2), toPt(37))
-    //     }
-    //     doc.text(assaPoSo, toPt(2), toPt(42))
-    //     doc.setFont("Arial", "bold")
-    //     doc.text(tlsOrder, toPt(2), toPt(47))
-    //     doc.text(`${inBoxQuantity} pcs.`, toPt(59), toPt(47))
-
-    //     doc.addImage(image, "png", toPt(10), toPt(3), toPt(60), toPt(8))
-
-    //     doc.save(`${tlsOrder}_${mxp}_Inner carton label.pdf`);
-    // }
-
-    // async function generateOuterLablePDF() {
-    //     const { jsPDF } = window.jspdf;
-
-    //     const mxp = document.getElementById("mxp").value.toUpperCase()
-    //     const projectName = document.getElementById("projectName").value
-    //     const productCode = document.getElementById("productCode").value.toUpperCase()
-    //     const vesselName = document.getElementById("vesselName").value
-    //     const assaPoSo = document.getElementById("assaPoSo").value.toUpperCase()
-    //     const tlsOrder = document.getElementById("tlsOrder").value.toUpperCase()
-
-    //     const inBoxQuantity = parseInt(document.getElementById("inBoxQuantity").value)
-    //     const quantityInOrder = parseInt(document.getElementById("quantityInOrder").value)
-        
-    //     const fullBoxQuantity = Math.floor(quantityInOrder / inBoxQuantity)
-    //     const remainedQuantity = quantityInOrder - (fullBoxQuantity * inBoxQuantity)
-    //     const totalBoxes = remainedQuantity === 0 ? fullBoxQuantity : fullBoxQuantity + 1;
-
-    //     const logo = document.getElementById("logo")
-    //     const image = new Image()
-    //     image.src = "img/assa_logo.png"
-    
-    //   // Створюємо PDF: розміри 10 см x 7.5 см (1 см ≈ 28.346 pt)
-    //     const doc = new jsPDF({
-    //         unit: "pt",
-    //         format: [toPt(100), toPt(75)], // 10x7.5 см
-    //         orientation: "landscape",
-    //     });
-
-    //     const pageWidth = doc.internal.pageSize.getWidth()
-    //     const maxTextWidth = pageWidth - toPt(6)
-
-    //     for (let i = 0; i < totalBoxes; i++) {
-    //         const isLastPage = (i === totalBoxes - 1);
-    //         const currentBoxQuantity = isLastPage && remainedQuantity !== 0 ? remainedQuantity : inBoxQuantity
-
-    //         doc.setFont("Arial", "normal")   
-    //         doc.setFontSize(17)
-    //         doc.text(`MXP# ${mxp}`, toPt(3), toPt(22))
-    //         const wrappedText = doc.splitTextToSize(projectName, maxTextWidth)
-    //         doc.setFont("Arial", "bold")
-    //         doc.setFontSize(18)
-    //         doc.text(wrappedText, pageWidth / 2, toPt(29), {align: "center"})
-    //         doc.setFont("Arial", "normal")
-    //         doc.setFontSize(17)
-    //         doc.text(productCode, pageWidth / 2, toPt(44), {align: "center"})
-    //         if (vesselName) {
-    //             doc.text(`Vessel name: `, toPt(3), toPt(50))
-    //         }
-    //         doc.text(assaPoSo, toPt(3), toPt(57))
-    //         doc.text(tlsOrder, toPt(3), toPt(64))
-    //         doc.setFont("Arial", "bold")
-    //         doc.setFontSize(18)
-    //         doc.text(`Q-ty: ${currentBoxQuantity}`, toPt(3), toPt(71))
-
-    //         doc.text(`${i+1}/${totalBoxes}`, toPt(85), toPt(71))
-    //         doc.addImage(image, "png", toPt(3), toPt(3), toPt(94), toPt(12))
-            
-    //         if (i < totalBoxes - 1) {
-    //             doc.addPage(); // Додає нову сторінку, крім останньої
-    //         }
-    //     }
-    //     doc.save(`${tlsOrder}_${mxp}_Outer carton label.pdf`);
-    // }
-  </script>
+  <div class="wrapper">
+    <header class="header">
+        <div class="header__container">
+            <img src="img/tls-logo.svg" alt="TLS logo" class="header__logo">
+            <ul class="header__list list">
+                <li class="list__item"><a href="#" class="list__link">Labels</a></li>
+                <li class="list__item"><a href="#" class="list__link">Packing list</a></li>
+            </ul>
+        </div>
+    </header>
+    <main class="page">
+        <div class="page__container">
+            <section class="page__label-section labels">
+                <h2 class="labels__title">Carton label Generator</h2>
+                <div class="labels__templates">
+                    <label class="labels__template" for="assa">Assa Abloy<input type="radio" id="assa" name="template" value="assa" checked></label>
+                    <label class="labels__template" for="tls">TLS<input type="radio" id="tls" name="template" value="tls"></label>
+                    <label class="labels__template" for="ncl">NCL<input type="radio" id="ncl" name="template" value="ncl"></label>
+                </div>
+                <div class="labels__form assa isShow">
+                    <label class="labels__label">
+                    Enter MXP number:
+                    <input class="labels__field" type="text" id="assa-mxp" placeholder="Enter MXP number:" />
+                    </label>
+                    <label class="labels__label">
+                        Enter project name:
+                        <input class="labels__field" type="text" id="assa-projectName" placeholder="Enter project name:" />
+                    </label>
+                    <label class="labels__label">
+                        Enter product code:
+                        <input class="labels__field" type="text" id="assa-productCode" placeholder="Enter product code:" />
+                    </label>
+                    <label class="labels__label">
+                        Enter Vessel name (if required):
+                        <input class="labels__field" type="text" id="assa-vesselName" placeholder="Enter Vessel name (if required):" />
+                    </label>
+                    <label class="labels__label">
+                        Enter PO/SO numbers Assa Abloy:
+                        <input class="labels__field" type="text" id="assa-assaPoSo" placeholder="Enter PO/SO numbers Assa Abloy:" />
+                    </label>
+                    <label class="labels__label">
+                        Enter TLS order number (or customer):
+                        <input class="labels__field" type="text" id="assa-tlsOrder" placeholder="Enter TLS oredr number:" />
+                    </label>
+                    <label class="labels__label">
+                        Enter items quantity in a inner box:
+                        <input class="labels__field" type="text" id="assa-innerBoxQuantity" placeholder="Enter items quantity in a inner box (pcs.):" value="200"/>
+                    </label>
+                    <label class="labels__label">
+                        Enter items quantity in a box:
+                        <input class="labels__field" type="text" id="assa-outerBoxQuantity" placeholder="Enter items quantity in a box (pcs.):" value="3000"/>
+                    </label>
+                    <label class="labels__label">
+                        Enter total items quantity:
+                        <input class="labels__field" type="text" id="assa-quantityInOrder" placeholder="Enter total items quantity (pcs.):"/>
+                    </label>
+                </div>
+                 <div class="labels__form tls">
+                    <label class="labels__label">
+                        Enter project name:
+                        <input class="labels__field" type="text" id="tls-projectName" placeholder="Enter project name:" />
+                    </label>
+                    <label class="labels__label">
+                        Enter product code:
+                        <input class="labels__field" type="text" id="tls-productCode" placeholder="Enter product code:" />
+                    </label>
+                    <label class="labels__label">
+                        Enter TLS PO number:
+                        <input class="labels__field" type="text" id="tls-tlsOrder" placeholder="Enter TLS oredr number:" />
+                    </label>
+                    <label class="labels__label">
+                        Enter items quantity in a inner box:
+                        <input class="labels__field" type="text" id="tls-innerBoxQuantity" placeholder="Enter items quantity in a inner box (pcs.):" value="2000"/>
+                    </label>
+                    <label class="labels__label">
+                        Enter items quantity in a box:
+                        <input class="labels__field" type="text" id="tls-outerBoxQuantity" placeholder="Enter items quantity in a box (pcs.):" value="10000"/>
+                    </label>
+                    <label class="labels__label">
+                        Enter total items quantity:
+                        <input class="labels__field" type="text" id="tls-quantityInOrder" placeholder="Enter total items quantity (pcs.):"/>
+                    </label>
+                </div>
+                <div class="labels__form ncl">
+                    <label class="labels__label">
+                        Enter MXP number:
+                        <input class="labels__field" type="text" id="ncl-mxp" placeholder="Enter MXP number:" />
+                    </label>
+                    <label class="labels__label">
+                        Enter project name:
+                        <input class="labels__field" type="text" id="ncl-projectName" placeholder="Enter project name:" />
+                    </label>
+                    <label class="labels__label">
+                        Enter product code:
+                        <input class="labels__field" type="text" id="ncl-productCode" placeholder="Enter product code:" />
+                    </label>
+                    <label class="labels__label">
+                        Enter Vessel name (if required):
+                        <input class="labels__field" disabled type="text" id="ncl-vesselName" placeholder="Enter Vessel name (if required):" />
+                    </label>
+                    <label class="labels__label">
+                        Enter PO/SO numbers Assa Abloy:
+                        <input class="labels__field" type="text" id="ncl-assaPoSo" placeholder="Enter PO/SO numbers Assa Abloy:" />
+                    </label>
+                    <label class="labels__label">
+                        Enter TLS order number (or customer):
+                        <input class="labels__field" type="text" id="ncl-tlsOrder" placeholder="Enter TLS oredr number:" />
+                    </label>
+                    <label class="labels__label">
+                        Enter items quantity in a inner box:
+                        <input class="labels__field" type="text" id="ncl-innerBoxQuantity" placeholder="Enter items quantity in a inner box (pcs.):" value="500"/>
+                    </label>
+                    <label class="labels__label">
+                        Enter items quantity in a box:
+                        <input class="labels__field" type="text" id="ncl-outerBoxQuantity" placeholder="Enter items quantity in a box (pcs.):" value="3000"/>
+                    </label>
+                    <label class="labels__label">
+                        Enter total items quantity:
+                        <input class="labels__field" type="text" id="ncl-quantityInOrder" placeholder="Enter total items quantity (pcs.):"/>
+                    </label>
+                </div>
+                <div class="labels__buttons">
+                    <button id="btnInner" class="labels__gen" type="button">Inner box label</button>
+                    <button id="btnOuter" class="labels__gen" type="button">Outer carton label</button>
+                </div>
+                
+            </section>
+        </div>
+    </main>
+    <footer class="footer">
+        <div class="footer__container">
+            <p class="footer__text">© 2025 | TLS Boca Systems Poland</p>
+        </div>
+    </footer>   
+  </div>
 </body>
 </html>
