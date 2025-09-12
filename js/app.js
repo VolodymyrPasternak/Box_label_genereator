@@ -182,7 +182,7 @@ async function generateAssaAbloyOuterLablePDF() {
             doc.addPage(); // Додає нову сторінку, крім останньої
         }
     }
-    doc.save(`${tlsOrder}_${mxp}_Outer carton label.pdf`);
+    doc.save(`${tlsOrder}_${mxp}_${vesselName}_Outer carton label.pdf`);
 }
 
 async function generateTlsInnerLablePDF() {
