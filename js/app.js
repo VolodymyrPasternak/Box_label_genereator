@@ -175,7 +175,7 @@ async function generateAssaAbloyOuterLablePDF() {
         doc.setFontSize(18)
         doc.text(`Q-ty: ${currentBoxQuantity}`, toPt(3), toPt(71))
 
-        doc.text(`${i+1}/${totalBoxes}`, toPt(85), toPt(71))
+        doc.text(`${i+1}/${totalBoxes}`, toPt(75), toPt(71))
         doc.addImage(image, "png", toPt(3), toPt(3), toPt(94), toPt(12))
         
         if (i < totalBoxes - 1) {
