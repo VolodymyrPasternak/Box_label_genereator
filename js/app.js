@@ -86,6 +86,11 @@ async function generateAssaAbloyInnerLablePDF() {
     const assaPoSo = document.getElementById("assa-assaPoSo").value.toUpperCase()
     const tlsOrder = document.getElementById("assa-tlsOrder").value.toUpperCase()
     const innerBoxQuantity = document.getElementById("assa-innerBoxQuantity").value
+    const quantityInOrder = parseInt(document.getElementById("assa-quantityInOrder").value)
+    
+    const fullBoxQuantity = Math.floor(quantityInOrder / innerBoxQuantity)
+    const remainedQuantity = quantityInOrder - (fullBoxQuantity * innerBoxQuantity)
+    const totalBoxes = remainedQuantity === 0 ? fullBoxQuantity : fullBoxQuantity + 1
 
     const image = new Image()
     image.src = "img/assa_logo.png"
@@ -100,25 +105,31 @@ async function generateAssaAbloyInnerLablePDF() {
     const pageWidth = doc.internal.pageSize.getWidth()
     const maxTextWidth = pageWidth - toPt(6)
 
-    doc.setFont("Arial", "normal")   
-    doc.setFontSize(13)
-    doc.text(`MXP# ${mxp}`, toPt(2), toPt(16))
-    const wrappedText = doc.splitTextToSize(projectName, maxTextWidth)
-    doc.setFont("Arial", "bold")
-    doc.text(wrappedText, pageWidth / 2, toPt(21), {align: "center"})
-    doc.setFont("Arial", "normal")
-    doc.text(productCode, pageWidth / 2, toPt(32), {align: "center"})
-    if (vesselName) {
-        doc.text(`Vessel name: ${vesselName}`, toPt(2), toPt(37))
+    for (let i = 0; i < totalBoxes; i++) {
+        const isLastPage = (i === totalBoxes - 1);
+        const currentBoxQuantity = isLastPage && remainedQuantity !== 0 ? remainedQuantity : innerBoxQuantity
+        doc.setFont("Arial", "normal")   
+        doc.setFontSize(13)
+        doc.text(`MXP# ${mxp}`, toPt(2), toPt(16))
+        const wrappedText = doc.splitTextToSize(projectName, maxTextWidth)
+        doc.setFont("Arial", "bold")
+        doc.text(wrappedText, pageWidth / 2, toPt(21), {align: "center"})
+        doc.setFont("Arial", "normal")
+        doc.text(productCode, pageWidth / 2, toPt(32), {align: "center"})
+        if (vesselName) {
+            doc.text(`Vessel name: ${vesselName}`, toPt(2), toPt(37))
+        }
+        doc.text(assaPoSo, toPt(2), toPt(42))
+        doc.setFont("Arial", "bold")
+        doc.text(tlsOrder, toPt(2), toPt(47))
+        doc.text(`${currentBoxQuantity} pcs.`, toPt(59), toPt(47))
+
+        doc.addImage(image, "png", toPt(10), toPt(3), toPt(60), toPt(8))
+        if (i < totalBoxes - 1) {
+            doc.addPage(); // Додає нову сторінку, крім останньої
+        }
     }
-    doc.text(assaPoSo, toPt(2), toPt(42))
-    doc.setFont("Arial", "bold")
-    doc.text(tlsOrder, toPt(2), toPt(47))
-    doc.text(`${innerBoxQuantity} pcs.`, toPt(59), toPt(47))
-
-    doc.addImage(image, "png", toPt(10), toPt(3), toPt(60), toPt(8))
-
-    doc.save(`${tlsOrder}_${mxp}_Inner carton label.pdf`);
+    doc.save(`${tlsOrder}_${mxp}_${vesselName}_Outer carton label.pdf`)
 }
 
 async function generateAssaAbloyOuterLablePDF() {
@@ -136,7 +147,7 @@ async function generateAssaAbloyOuterLablePDF() {
     
     const fullBoxQuantity = Math.floor(quantityInOrder / inBoxQuantity)
     const remainedQuantity = quantityInOrder - (fullBoxQuantity * inBoxQuantity)
-    const totalBoxes = remainedQuantity === 0 ? fullBoxQuantity : fullBoxQuantity + 1;
+    const totalBoxes = remainedQuantity === 0 ? fullBoxQuantity : fullBoxQuantity + 1
 
     const logo = document.getElementById("logo")
     const image = new Image()
@@ -175,14 +186,14 @@ async function generateAssaAbloyOuterLablePDF() {
         doc.setFontSize(18)
         doc.text(`Q-ty: ${currentBoxQuantity}`, toPt(3), toPt(71))
 
-        doc.text(`${i+1}/${totalBoxes}`, toPt(75), toPt(71))
+        doc.text(`${i+1}/${totalBoxes}`, toPt(97), toPt(71), { align: "right" })
         doc.addImage(image, "png", toPt(3), toPt(3), toPt(94), toPt(12))
         
         if (i < totalBoxes - 1) {
             doc.addPage(); // Додає нову сторінку, крім останньої
         }
     }
-    doc.save(`${tlsOrder}_${mxp}_${vesselName}_Outer carton label.pdf`);
+    doc.save(`${tlsOrder}_${mxp}_${vesselName}_Outer carton label.pdf`)
 }
 
 async function generateTlsInnerLablePDF() {
@@ -192,6 +203,11 @@ async function generateTlsInnerLablePDF() {
     const productCode = document.getElementById("tls-productCode").value.toUpperCase()
     const tlsOrder = document.getElementById("tls-tlsOrder").value.toUpperCase()
     const innerBoxQuantity = document.getElementById("tls-innerBoxQuantity").value
+    const quantityInOrder = parseInt(document.getElementById("tls-quantityInOrder").value)
+
+    const fullBoxQuantity = Math.floor(quantityInOrder / innerBoxQuantity)
+    const remainedQuantity = quantityInOrder - (fullBoxQuantity * innerBoxQuantity)
+    const totalBoxes = remainedQuantity === 0 ? fullBoxQuantity : fullBoxQuantity + 1
 
     function loadImage(src) {
         return new Promise((resolve, reject) => {
@@ -202,7 +218,7 @@ async function generateTlsInnerLablePDF() {
         img.src = src
         })
     }
-    const tlsImage = await loadImage('img/tls_logo.png')
+    const tlsImage = await loadImage('img/tls_logo.webp')
 
     // Створюємо PDF: розміри 8 см x 5 см (1 см ≈ 28.346 pt)
     const doc = new jsPDF({
@@ -214,19 +230,25 @@ async function generateTlsInnerLablePDF() {
     const pageWidth = doc.internal.pageSize.getWidth()
     const maxTextWidth = pageWidth - toPt(6)
 
-    doc.setFont("Arial", "normal")   
-    doc.setFontSize(13)
-    const wrappedText = doc.splitTextToSize(projectName, maxTextWidth)
-    doc.setFont("Arial", "bold")
-    doc.text(wrappedText, pageWidth / 2, toPt(25), {align: "center"})
-    doc.setFont("Arial", "normal")
-    doc.text(productCode, pageWidth / 2, toPt(35), {align: "center"})
-    doc.setFont("Arial", "bold")
-    doc.text(`PO# ${tlsOrder}`, toPt(2), toPt(47))
-    doc.text(`${innerBoxQuantity} pcs.`, toPt(59), toPt(47))
+     for (let i = 0; i < totalBoxes; i++) {
+        const isLastPage = (i === totalBoxes - 1);
+        const currentBoxQuantity = isLastPage && remainedQuantity !== 0 ? remainedQuantity : innerBoxQuantity
+        doc.setFont("Arial", "normal")   
+        doc.setFontSize(13)
+        const wrappedText = doc.splitTextToSize(projectName, maxTextWidth)
+        doc.setFont("Arial", "bold")
+        doc.text(wrappedText, pageWidth / 2, toPt(25), {align: "center"})
+        doc.setFont("Arial", "normal")
+        doc.text(productCode, pageWidth / 2, toPt(35), {align: "center"})
+        doc.setFont("Arial", "bold")
+        doc.text(`PO# ${tlsOrder}`, toPt(2), toPt(47))
+        doc.text(`${currentBoxQuantity} pcs.`, toPt(59), toPt(47))
 
-    doc.addImage(tlsImage, "png", toPt(3), toPt(3), toPt(74), toPt(13.7))
-
+        doc.addImage(tlsImage, "webp", toPt(3), toPt(3), toPt(74), toPt(13.7))
+        if (i < totalBoxes - 1) {
+                    doc.addPage(); // Додає нову сторінку, крім останньої
+          }
+      }
     doc.save(`${tlsOrder}_${projectName}_Inner carton label.pdf`);
 }
 
@@ -253,7 +275,7 @@ async function generateTlsOuterLablePDF() {
         img.src = src
         })
     }
-    const tlsImage = await loadImage('img/tls_logo.png')
+    const tlsImage = await loadImage('img/tls_logo.webp')
 
     // Створюємо PDF: розміри 10 см x 7.5 см (1 см ≈ 28.346 pt)
     const doc = new jsPDF({
@@ -283,8 +305,8 @@ async function generateTlsOuterLablePDF() {
         doc.setFontSize(18)
         doc.text(`Q-ty: ${currentBoxQuantity}`, toPt(3), toPt(71))
 
-        doc.text(`${i+1}/${totalBoxes}`, toPt(85), toPt(71))
-        doc.addImage(tlsImage, "png", toPt(3), toPt(3), toPt(94), toPt(17.5))
+        doc.text(`${i+1}/${totalBoxes}`, toPt(97), toPt(71), { align: "right" })
+        doc.addImage(tlsImage, "webp", toPt(3), toPt(3), toPt(94), toPt(17.5))
         
         if (i < totalBoxes - 1) {
             doc.addPage(); // Додає нову сторінку, крім останньої
@@ -302,6 +324,11 @@ async function generateNclInnerLablePDF() {
     const assaPoSo = document.getElementById("ncl-assaPoSo").value.toUpperCase()
     const tlsOrder = document.getElementById("ncl-tlsOrder").value.toUpperCase()
     const innerBoxQuantity = document.getElementById("ncl-innerBoxQuantity").value
+    const quantityInOrder = parseInt(document.getElementById("ncl-quantityInOrder").value)
+    
+    const fullBoxQuantity = Math.floor(quantityInOrder / innerBoxQuantity)
+    const remainedQuantity = quantityInOrder - (fullBoxQuantity * innerBoxQuantity)
+    const totalBoxes = remainedQuantity === 0 ? fullBoxQuantity : fullBoxQuantity + 1
 
     const image = new Image()
     image.src = "img/assa_logo.png"
@@ -316,20 +343,26 @@ async function generateNclInnerLablePDF() {
     const pageWidth = doc.internal.pageSize.getWidth()
     const maxTextWidth = pageWidth - toPt(6)
 
-    doc.setFont("Arial", "normal")   
-    doc.setFontSize(13)
-    doc.text(`MXP# ${mxp}`, toPt(2), toPt(16))
-    const wrappedText = doc.splitTextToSize(projectName, maxTextWidth)
-    doc.setFont("Arial", "bold")
-    doc.text(wrappedText, pageWidth / 2, toPt(21), {align: "center"})
-    doc.setFont("Arial", "normal")
-    doc.text(productCode, pageWidth / 2, toPt(32), {align: "center"})
-    doc.text(assaPoSo, toPt(2), toPt(42))
-    doc.setFont("Arial", "bold")
-    doc.text(`${innerBoxQuantity} pcs.`, toPt(2), toPt(47))
+    for (let i = 0; i < totalBoxes; i++) {
+        const isLastPage = (i === totalBoxes - 1);
+        const currentBoxQuantity = isLastPage && remainedQuantity !== 0 ? remainedQuantity : innerBoxQuantity
+        doc.setFont("Arial", "normal")   
+        doc.setFontSize(13)
+        doc.text(`MXP# ${mxp}`, toPt(2), toPt(16))
+        const wrappedText = doc.splitTextToSize(projectName, maxTextWidth)
+        doc.setFont("Arial", "bold")
+        doc.text(wrappedText, pageWidth / 2, toPt(21), {align: "center"})
+        doc.setFont("Arial", "normal")
+        doc.text(productCode, pageWidth / 2, toPt(32), {align: "center"})
+        doc.text(assaPoSo, toPt(2), toPt(42))
+        doc.setFont("Arial", "bold")
+        doc.text(`${currentBoxQuantity} pcs.`, toPt(2), toPt(47))
 
-    doc.addImage(image, "png", toPt(10), toPt(3), toPt(60), toPt(8))
-
+        doc.addImage(image, "png", toPt(10), toPt(3), toPt(60), toPt(8))
+        if (i < totalBoxes - 1) {
+              doc.addPage(); // Додає нову сторінку, крім останньої
+          }
+      }
     doc.save(`${tlsOrder}_${mxp}_Inner carton label.pdf`);
 }
 
@@ -348,7 +381,7 @@ async function generateNclOuterLablePDF() {
     
     const fullBoxQuantity = Math.floor(quantityInOrder / inBoxQuantity)
     const remainedQuantity = quantityInOrder - (fullBoxQuantity * inBoxQuantity)
-    const totalBoxes = remainedQuantity === 0 ? fullBoxQuantity : fullBoxQuantity + 1;
+    const totalBoxes = remainedQuantity === 0 ? fullBoxQuantity : fullBoxQuantity + 1
 
     const image = new Image()
     image.src = "img/assa_logo.png"
@@ -388,7 +421,7 @@ async function generateNclOuterLablePDF() {
         doc.setFontSize(18)
         doc.text(`Q-ty: ${currentBoxQuantity}`, toPt(3), toPt(71))
 
-        doc.text(`${i+1}/${totalBoxes}`, toPt(75), toPt(71))
+        doc.text(`${i+1}/${totalBoxes}`, toPt(97), toPt(71), { align: "right" })
         doc.addImage(image, "png", toPt(3), toPt(3), toPt(94), toPt(12))
         doc.addImage(nclImage, "png", toPt(75), toPt(35), toPt(22), toPt(22))
 
@@ -398,4 +431,3 @@ async function generateNclOuterLablePDF() {
     }
     doc.save(`${tlsOrder}_${mxp}_Outer carton label.pdf`);
 }
-
