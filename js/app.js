@@ -129,7 +129,7 @@ async function generateAssaAbloyInnerLablePDF() {
             doc.addPage(); // Додає нову сторінку, крім останньої
         }
     }
-    doc.save(`${tlsOrder}_${mxp}_${vesselName}_Outer carton label.pdf`)
+    doc.save(`${tlsOrder}_${mxp}_${vesselName}_Inner carton label.pdf`)
 }
 
 async function generateAssaAbloyOuterLablePDF() {
