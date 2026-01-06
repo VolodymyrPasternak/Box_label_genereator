@@ -218,7 +218,7 @@ async function generateTlsInnerLablePDF() {
         img.src = src
         })
     }
-    const tlsImage = await loadImage('img/tls_logo.webp')
+    const tlsImage = await loadImage('img/vullpo.webp')
 
     // Створюємо PDF: розміри 8 см x 5 см (1 см ≈ 28.346 pt)
     const doc = new jsPDF({
@@ -244,7 +244,7 @@ async function generateTlsInnerLablePDF() {
         doc.text(`PO# ${tlsOrder}`, toPt(2), toPt(47))
         doc.text(`${currentBoxQuantity} pcs.`, toPt(59), toPt(47))
 
-        doc.addImage(tlsImage, "webp", toPt(3), toPt(3), toPt(74), toPt(13.7))
+        doc.addImage(tlsImage, "webp", toPt(24), toPt(3), toPt(30.5), toPt(12))
         if (i < totalBoxes - 1) {
                     doc.addPage(); // Додає нову сторінку, крім останньої
           }
@@ -275,7 +275,7 @@ async function generateTlsOuterLablePDF() {
         img.src = src
         })
     }
-    const tlsImage = await loadImage('img/tls_logo.webp')
+    const tlsImage = await loadImage('img/vullpo.webp')
 
     // Створюємо PDF: розміри 10 см x 7.5 см (1 см ≈ 28.346 pt)
     const doc = new jsPDF({
@@ -306,7 +306,7 @@ async function generateTlsOuterLablePDF() {
         doc.text(`Q-ty: ${currentBoxQuantity}`, toPt(3), toPt(71))
 
         doc.text(`${i+1}/${totalBoxes}`, toPt(97), toPt(71), { align: "right" })
-        doc.addImage(tlsImage, "webp", toPt(3), toPt(3), toPt(94), toPt(17.5))
+        doc.addImage(tlsImage, "webp", toPt(26), toPt(3), toPt(47), toPt(17.5))
         
         if (i < totalBoxes - 1) {
             doc.addPage(); // Додає нову сторінку, крім останньої

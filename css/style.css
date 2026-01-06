@@ -22,17 +22,7 @@ body {
     align-items: center;
 }
 .header {
-    position: relative;
-}
-.header::before {
-    content: "";
-    position: absolute;
-    top: 2.3rem;
-    left: 0;
-    z-index: -1;
-    width: 100%;
-    height: 1.4rem;
-    background-color: #068FBE;
+    background-color: #093553;
 }
 .header__logo {
     width: 16rem;
@@ -67,17 +57,17 @@ body {
     color: #555;
     font-weight: 700;
     padding: 0.75rem 1.5rem;
-    border: .1rem solid #068FBE;
+    border: .1rem solid #093553;
     border-radius: .3rem;
     cursor: pointer;
     transition: all .3s ease;
 }
 .labels__template:hover {
-    color: #068FBE;
-    box-shadow: 0px 0px 6px 0px #068FBE;
+    color: #093553;
+    box-shadow: 0px 0px 6px 0px #093553;
 }
 .labels__template:has(input[type="radio"]:checked) {
-    background-color: #068FBE;
+    background-color: #093553;
     color: white;
     box-shadow: none;
 }
@@ -107,16 +97,16 @@ body {
     max-width: 100%; 
     padding: 0.5rem; 
     margin-top: 0.5rem;
-    border: .1rem solid #068FBE;
+    border: .1rem solid #093553;
     border-radius: .3rem;
     transition: all .3s ease;
 }
 .labels__field:hover {
-    box-shadow: 0px 0px 6px 0px #068FBE;
+    box-shadow: 0px 0px 6px 0px #093553;
 }
 .labels__field:focus-visible {
-    outline: .1rem solid #068FBE;
-    box-shadow: 0px 0px 6px 0px #068FBE;
+    outline: .1rem solid #093553;
+    box-shadow: 0px 0px 6px 0px #093553;
 }
 .labels__buttons {
     display: flex;
@@ -125,23 +115,23 @@ body {
 .labels__gen {
     font-weight: 700;
     padding: 0.75rem 1.5rem;
-    border: .1rem solid #068FBE;
-    color: #068FBE;
+    border: .1rem solid #093553;
+    color: #093553;
     border-radius: .3rem;
     cursor: pointer;
     transition: all .3s ease;
     margin-bottom: 1.5rem;
 }
 .labels__gen:hover {
-    box-shadow: 0px 0px 6px 0px #068FBE;
+    box-shadow: 0px 0px 6px 0px #093553;
 }
 .labels__gen:active {
     color: #fff;
-    background-color: #068FBE;
+    background-color: #093553;
 }
 
 .footer {
-    background-color: #068FBE;
+    background-color: #093553;
     padding: 0.7rem 0;
 }
 .footer__text {
