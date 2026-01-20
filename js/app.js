@@ -242,7 +242,8 @@ async function generateTlsInnerLablePDF() {
         doc.text(productCode, pageWidth / 2, toPt(35), {align: "center"})
         doc.setFont("Arial", "bold")
         doc.text(`PO# ${tlsOrder}`, toPt(2), toPt(47))
-        doc.text(`${currentBoxQuantity} pcs.`, toPt(59), toPt(47))
+        doc.text(`${currentBoxQuantity} pcs.`, toPt(2), toPt(41))
+        doc.text(`${i+1}/${totalBoxes}`, toPt(77), toPt(47), { align: "right" })
 
         doc.addImage(tlsImage, "webp", toPt(24), toPt(3), toPt(30.5), toPt(12))
         if (i < totalBoxes - 1) {
