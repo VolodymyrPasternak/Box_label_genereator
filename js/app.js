@@ -5,12 +5,30 @@ const generators = {
     outer: generateAssaAbloyOuterLablePDF,
   },
   tls: {
-    inner: generateTlsInnerLablePDF,
-    outer: generateTlsOuterLablePDF,
+    "100x80": {
+        inner: generateTls100x80InnerLablePDF,
+        outer: generateTls100x80OuterLablePDF,
+    },
+
+    "63x72": {
+        inner: generateTls63x72InnerLablePDF,
+        outer: generateTls63x72OuterLablePDF,
+    },
   },
   ncl: {
     inner: generateNclInnerLablePDF,
     outer: generateNclOuterLablePDF,
+  },
+  base: {
+    "100x80": {
+        inner: generateBase100x80InnerLablePDF,
+        outer: generateBase100x80OuterLablePDF,
+    },
+
+    "63x72": {
+        inner: generateBase63x72InnerLablePDF,
+        outer: generateBase63x72OuterLablePDF,
+    },
   },
 };
 
@@ -39,6 +57,11 @@ function showForm(templateId) {
 function getCurrentTemplate() {
   return document.querySelector('input[name="template"]:checked')?.value || null;
 }
+function getCurrentSize(template) {
+    return document.querySelector(
+        `input[name="${template}-size"]:checked`
+    )?.value || null;
+}
 
 // слухач перемикання радіо
 document.addEventListener('change', (e) => {
@@ -52,15 +75,42 @@ const btnInner = document.getElementById('btnInner');
 const btnOuter = document.getElementById('btnOuter');
 
 btnInner.addEventListener('click', () => {
-  const key = getCurrentTemplate();
-  const fn = generators[key]?.inner;
-  if (fn) fn(); else console.warn('Нема функції inner для шаблону:', key);
+    const key = getCurrentTemplate();
+
+    let fn;
+
+    if (key === 'tls' || key === 'base') {
+    const size = getCurrentSize(key);
+    fn = generators[key][size]?.inner;
+    } else {
+        fn = generators[key]?.inner;
+    }
+
+    if (fn) {
+        fn();
+    } else {
+        console.warn('Brak funkcji inner dla:', key);
+    }
 });
 
+
 btnOuter.addEventListener('click', () => {
-  const key = getCurrentTemplate();
-  const fn = generators[key]?.outer;
-  if (fn) fn(); else console.warn('Нема функції outer для шаблону:', key);
+    const key = getCurrentTemplate();
+
+    let fn;
+
+    if (key === 'tls' || key === 'base') {
+    const size = getCurrentSize(key);
+    fn = generators[key][size]?.outer;
+    } else {
+        fn = generators[key]?.outer;
+    }
+
+    if (fn) {
+        fn();
+    } else {
+        console.warn('Brak funkcji outer dla:', key);
+    }
 });
 
 // ініціалізація
@@ -196,7 +246,7 @@ async function generateAssaAbloyOuterLablePDF() {
     doc.save(`${tlsOrder}_${mxp}_${vesselName}_Outer carton label.pdf`)
 }
 
-async function generateTlsInnerLablePDF() {
+async function generateTls100x80InnerLablePDF() {
     const { jsPDF } = window.jspdf;
 
     const projectName = document.getElementById("tls-projectName").value
@@ -253,7 +303,7 @@ async function generateTlsInnerLablePDF() {
     doc.save(`${tlsOrder}_${projectName}_Inner carton label.pdf`);
 }
 
-async function generateTlsOuterLablePDF() {
+async function generateTls100x80OuterLablePDF() {
     const { jsPDF } = window.jspdf;
 
     const projectName = document.getElementById("tls-projectName").value
@@ -315,6 +365,126 @@ async function generateTlsOuterLablePDF() {
     }
     doc.save(`${tlsOrder}_${projectName}_Outer carton label.pdf`);
 }
+async function generateTls63x72InnerLablePDF() {
+    const { jsPDF } = window.jspdf;
+
+    const projectName = document.getElementById("tls-projectName").value
+    const productCode = document.getElementById("tls-productCode").value.toUpperCase()
+    const tlsOrder = document.getElementById("tls-tlsOrder").value.toUpperCase()
+    const innerBoxQuantity = document.getElementById("tls-innerBoxQuantity").value
+    const quantityInOrder = parseInt(document.getElementById("tls-quantityInOrder").value)
+
+    const fullBoxQuantity = Math.floor(quantityInOrder / innerBoxQuantity)
+    const remainedQuantity = quantityInOrder - (fullBoxQuantity * innerBoxQuantity)
+    const totalBoxes = remainedQuantity === 0 ? fullBoxQuantity : fullBoxQuantity + 1
+
+    function loadImage(src) {
+        return new Promise((resolve, reject) => {
+        const img = new Image()
+        img.onload = () => resolve(img)
+        img.onerror = reject
+        img.crossOrigin = 'anonymous' // на всяк випадок, якщо коли-небудь буде інший домен
+        img.src = src
+        })
+    }
+    const tlsImage = await loadImage('img/vullpo.webp')
+
+    // Створюємо PDF: розміри 8 см x 5 см (1 см ≈ 28.346 pt)
+    const doc = new jsPDF({
+        unit: "pt",
+        format: [toPt(80), toPt(50)], // 8x5 см
+        orientation: "landscape",
+    });
+
+    const pageWidth = doc.internal.pageSize.getWidth()
+    const maxTextWidth = pageWidth - toPt(6)
+
+     for (let i = 0; i < totalBoxes; i++) {
+        const isLastPage = (i === totalBoxes - 1);
+        const currentBoxQuantity = isLastPage && remainedQuantity !== 0 ? remainedQuantity : innerBoxQuantity
+        doc.setFont("Arial", "normal")   
+        doc.setFontSize(13)
+        const wrappedText = doc.splitTextToSize(projectName, maxTextWidth)
+        doc.setFont("Arial", "bold")
+        doc.text(wrappedText, pageWidth / 2, toPt(25), {align: "center"})
+        doc.setFont("Arial", "normal")
+        doc.text(productCode, pageWidth / 2, toPt(35), {align: "center"})
+        doc.setFont("Arial", "bold")
+        doc.text(`PO# ${tlsOrder}`, toPt(2), toPt(47))
+        doc.text(`${currentBoxQuantity} pcs.`, toPt(2), toPt(41))
+        doc.text(`${i+1}/${totalBoxes}`, toPt(77), toPt(47), { align: "right" })
+
+        doc.addImage(tlsImage, "webp", toPt(24), toPt(3), toPt(30.5), toPt(12))
+        if (i < totalBoxes - 1) {
+                    doc.addPage(); // Додає нову сторінку, крім останньої
+          }
+      }
+    doc.save(`${tlsOrder}_${projectName}_Inner carton label.pdf`);
+}
+
+async function generateTls63x72OuterLablePDF() {
+    const { jsPDF } = window.jspdf;
+
+    const projectName = document.getElementById("tls-projectName").value
+    const productCode = document.getElementById("tls-productCode").value.toUpperCase()
+    const tlsOrder = document.getElementById("tls-tlsOrder").value.toUpperCase()
+
+    const inBoxQuantity = parseInt(document.getElementById("tls-outerBoxQuantity").value)
+    const quantityInOrder = parseInt(document.getElementById("tls-quantityInOrder").value)
+    
+    const fullBoxQuantity = Math.floor(quantityInOrder / inBoxQuantity)
+    const remainedQuantity = quantityInOrder - (fullBoxQuantity * inBoxQuantity)
+    const totalBoxes = remainedQuantity === 0 ? fullBoxQuantity : fullBoxQuantity + 1;
+
+    function loadImage(src) {
+        return new Promise((resolve, reject) => {
+        const img = new Image()
+        img.onload = () => resolve(img)
+        img.onerror = reject
+        img.crossOrigin = 'anonymous' // на всяк випадок, якщо коли-небудь буде інший домен
+        img.src = src
+        })
+    }
+    const tlsImage = await loadImage('img/vullpo.webp')
+
+    // Створюємо PDF: розміри 10 см x 7.5 см (1 см ≈ 28.346 pt)
+    const doc = new jsPDF({
+        unit: "pt",
+        format: [toPt(63.5), toPt(72)], // 10x7.5 см
+        orientation: "landscape",
+    });
+
+    const pageWidth = doc.internal.pageSize.getWidth()
+    const maxTextWidth = pageWidth - toPt(6)
+
+    for (let i = 0; i < totalBoxes; i++) {
+        const isLastPage = (i === totalBoxes - 1);
+        const currentBoxQuantity = isLastPage && remainedQuantity !== 0 ? remainedQuantity : inBoxQuantity
+
+        doc.setFont("Arial", "normal")   
+        doc.setFontSize(15)
+        const wrappedText = doc.splitTextToSize(projectName, maxTextWidth)
+        doc.setFont("Arial", "bold")
+        doc.setFontSize(15)
+        doc.text(wrappedText, pageWidth / 2, toPt(29), {align: "center"})
+        doc.setFont("Arial", "normal")
+        doc.setFontSize(13)
+        doc.text(productCode, pageWidth / 2, toPt(43), {align: "center"})
+        doc.text(`PO# ${tlsOrder}`, toPt(3), toPt(53))
+        doc.setFont("Arial", "bold")
+        doc.setFontSize(15)
+        doc.text(`Q-ty: ${currentBoxQuantity}`, toPt(3), toPt(60))
+
+        doc.text(`${i+1}/${totalBoxes}`, toPt(69), toPt(60), { align: "right" })
+        doc.addImage(tlsImage, "webp", toPt(12), toPt(3), toPt(47), toPt(17.5))
+        
+        if (i < totalBoxes - 1) {
+            doc.addPage(); // Додає нову сторінку, крім останньої
+        }
+    }
+    doc.save(`${tlsOrder}_${projectName}_Outer carton label.pdf`);
+}
+
 async function generateNclInnerLablePDF() {
     const { jsPDF } = window.jspdf;
 
@@ -431,4 +601,242 @@ async function generateNclOuterLablePDF() {
         }
     }
     doc.save(`${tlsOrder}_${mxp}_Outer carton label.pdf`);
+}
+async function generateBase100x80InnerLablePDF() {
+    const { jsPDF } = window.jspdf;
+
+    const projectName = document.getElementById("base-projectName").value
+    const productCode = document.getElementById("base-productCode").value.toUpperCase()
+    const tlsOrder = document.getElementById("base-tlsOrder").value.toUpperCase()
+    const innerBoxQuantity = document.getElementById("base-innerBoxQuantity").value
+    const quantityInOrder = parseInt(document.getElementById("base-quantityInOrder").value)
+
+    const fullBoxQuantity = Math.floor(quantityInOrder / innerBoxQuantity)
+    const remainedQuantity = quantityInOrder - (fullBoxQuantity * innerBoxQuantity)
+    const totalBoxes = remainedQuantity === 0 ? fullBoxQuantity : fullBoxQuantity + 1
+
+    function loadImage(src) {
+        return new Promise((resolve, reject) => {
+        const img = new Image()
+        img.onload = () => resolve(img)
+        img.onerror = reject
+        img.crossOrigin = 'anonymous' // на всяк випадок, якщо коли-небудь буде інший домен
+        img.src = src
+        })
+    }
+    const tlsImage = await loadImage('img/base_logo_v2.png')
+
+    // Створюємо PDF: розміри 8 см x 5 см (1 см ≈ 28.346 pt)
+    const doc = new jsPDF({
+        unit: "pt",
+        format: [toPt(80), toPt(50)], // 8x5 см
+        orientation: "landscape",
+    });
+
+    const pageWidth = doc.internal.pageSize.getWidth()
+    const maxTextWidth = pageWidth - toPt(6)
+
+     for (let i = 0; i < totalBoxes; i++) {
+        const isLastPage = (i === totalBoxes - 1);
+        const currentBoxQuantity = isLastPage && remainedQuantity !== 0 ? remainedQuantity : innerBoxQuantity
+        doc.setFont("Arial", "normal")   
+        doc.setFontSize(13)
+        const wrappedText = doc.splitTextToSize(projectName, maxTextWidth)
+        doc.setFont("Arial", "bold")
+        doc.text(wrappedText, pageWidth / 2, toPt(25), {align: "center"})
+        doc.setFont("Arial", "normal")
+        doc.text(productCode, pageWidth / 2, toPt(35), {align: "center"})
+        doc.setFont("Arial", "bold")
+        doc.text(`PO# ${tlsOrder}`, toPt(2), toPt(47))
+        doc.text(`${currentBoxQuantity} pcs.`, toPt(2), toPt(41))
+        doc.text(`${i+1}/${totalBoxes}`, toPt(77), toPt(47), { align: "right" })
+
+        doc.addImage(tlsImage, "webp", toPt(24), toPt(3), toPt(30.5), toPt(8.95))
+        if (i < totalBoxes - 1) {
+                    doc.addPage(); // Додає нову сторінку, крім останньої
+          }
+      }
+    doc.save(`${tlsOrder}_${projectName}_Inner carton label.pdf`);
+}
+
+async function generateBase100x80OuterLablePDF() {
+    const { jsPDF } = window.jspdf;
+
+    const projectName = document.getElementById("base-projectName").value
+    const productCode = document.getElementById("base-productCode").value.toUpperCase()
+    const tlsOrder = document.getElementById("base-tlsOrder").value.toUpperCase()
+
+    const inBoxQuantity = parseInt(document.getElementById("base-outerBoxQuantity").value)
+    const quantityInOrder = parseInt(document.getElementById("base-quantityInOrder").value)
+    
+    const fullBoxQuantity = Math.floor(quantityInOrder / inBoxQuantity)
+    const remainedQuantity = quantityInOrder - (fullBoxQuantity * inBoxQuantity)
+    const totalBoxes = remainedQuantity === 0 ? fullBoxQuantity : fullBoxQuantity + 1;
+
+    function loadImage(src) {
+        return new Promise((resolve, reject) => {
+        const img = new Image()
+        img.onload = () => resolve(img)
+        img.onerror = reject
+        img.crossOrigin = 'anonymous' // на всяк випадок, якщо коли-небудь буде інший домен
+        img.src = src
+        })
+    }
+    const tlsImage = await loadImage('img/base_logo_v2.png')
+
+    // Створюємо PDF: розміри 10 см x 7.5 см (1 см ≈ 28.346 pt)
+    const doc = new jsPDF({
+        unit: "pt",
+        format: [toPt(100), toPt(75)], // 10x7.5 см
+        orientation: "landscape",
+    });
+
+    const pageWidth = doc.internal.pageSize.getWidth()
+    const maxTextWidth = pageWidth - toPt(6)
+
+    for (let i = 0; i < totalBoxes; i++) {
+        const isLastPage = (i === totalBoxes - 1);
+        const currentBoxQuantity = isLastPage && remainedQuantity !== 0 ? remainedQuantity : inBoxQuantity
+
+        doc.setFont("Arial", "normal")   
+        doc.setFontSize(17)
+        const wrappedText = doc.splitTextToSize(projectName, maxTextWidth)
+        doc.setFont("Arial", "bold")
+        doc.setFontSize(18)
+        doc.text(wrappedText, pageWidth / 2, toPt(32), {align: "center"})
+        doc.setFont("Arial", "normal")
+        doc.setFontSize(17)
+        doc.text(productCode, pageWidth / 2, toPt(50), {align: "center"})
+        doc.text(`PO# ${tlsOrder}`, toPt(3), toPt(64))
+        doc.setFont("Arial", "bold")
+        doc.setFontSize(18)
+        doc.text(`Q-ty: ${currentBoxQuantity}`, toPt(3), toPt(71))
+
+        doc.text(`${i+1}/${totalBoxes}`, toPt(97), toPt(71), { align: "right" })
+        doc.addImage(tlsImage, "webp", toPt(26), toPt(3), toPt(47), toPt(13.8))
+        
+        if (i < totalBoxes - 1) {
+            doc.addPage(); // Додає нову сторінку, крім останньої
+        }
+    }
+    doc.save(`${tlsOrder}_${projectName}_Outer carton label.pdf`);
+}
+async function generateBase63x72InnerLablePDF() {
+    const { jsPDF } = window.jspdf;
+
+    const projectName = document.getElementById("base-projectName").value
+    const productCode = document.getElementById("base-productCode").value
+    const tlsOrder = document.getElementById("base-tlsOrder").value.toUpperCase()
+    const innerBoxQuantity = document.getElementById("base-innerBoxQuantity").value
+    const quantityInOrder = parseInt(document.getElementById("base-quantityInOrder").value)
+
+    const fullBoxQuantity = Math.floor(quantityInOrder / innerBoxQuantity)
+    const remainedQuantity = quantityInOrder - (fullBoxQuantity * innerBoxQuantity)
+    const totalBoxes = remainedQuantity === 0 ? fullBoxQuantity : fullBoxQuantity + 1
+
+    function loadImage(src) {
+        return new Promise((resolve, reject) => {
+        const img = new Image()
+        img.onload = () => resolve(img)
+        img.onerror = reject
+        img.crossOrigin = 'anonymous' // на всяк випадок, якщо коли-небудь буде інший домен
+        img.src = src
+        })
+    }
+    const tlsImage = await loadImage('img/base_logo_v2.png')
+
+    // Створюємо PDF: розміри 8 см x 5 см (1 см ≈ 28.346 pt)
+    const doc = new jsPDF({
+        unit: "pt",
+        format: [toPt(80), toPt(50)], // 8x5 см
+        orientation: "landscape",
+    });
+
+    const pageWidth = doc.internal.pageSize.getWidth()
+    const maxTextWidth = pageWidth - toPt(6)
+
+     for (let i = 0; i < totalBoxes; i++) {
+        const isLastPage = (i === totalBoxes - 1);
+        const currentBoxQuantity = isLastPage && remainedQuantity !== 0 ? remainedQuantity : innerBoxQuantity
+        doc.setFont("Arial", "normal")   
+        doc.setFontSize(13)
+        const wrappedText = doc.splitTextToSize(projectName, maxTextWidth)
+        doc.setFont("Arial", "bold")
+        doc.text(wrappedText, pageWidth / 2, toPt(25), {align: "center"})
+        doc.setFont("Arial", "normal")
+        doc.text(productCode, pageWidth / 2, toPt(35), {align: "center"})
+        doc.setFont("Arial", "bold")
+        doc.text(`PO# ${tlsOrder}`, toPt(2), toPt(47))
+        doc.text(`${currentBoxQuantity} pcs.`, toPt(2), toPt(41))
+        doc.text(`${i+1}/${totalBoxes}`, toPt(77), toPt(47), { align: "right" })
+
+        doc.addImage(tlsImage, "webp", toPt(24), toPt(3), toPt(30.5), toPt(12))
+        if (i < totalBoxes - 1) {
+                    doc.addPage(); // Додає нову сторінку, крім останньої
+          }
+      }
+    doc.save(`${tlsOrder}_${projectName}_Inner carton label.pdf`);
+}
+
+async function generateBase63x72OuterLablePDF() {
+    const { jsPDF } = window.jspdf;
+
+    const projectName = document.getElementById("base-projectName").value
+    const productCode = document.getElementById("base-productCode").value
+    const tlsOrder = document.getElementById("base-tlsOrder").value.toUpperCase()
+
+    const inBoxQuantity = parseInt(document.getElementById("base-outerBoxQuantity").value)
+    const quantityInOrder = parseInt(document.getElementById("base-quantityInOrder").value)
+    
+    const fullBoxQuantity = Math.floor(quantityInOrder / inBoxQuantity)
+    const remainedQuantity = quantityInOrder - (fullBoxQuantity * inBoxQuantity)
+    const totalBoxes = remainedQuantity === 0 ? fullBoxQuantity : fullBoxQuantity + 1;
+
+    function loadImage(src) {
+        return new Promise((resolve, reject) => {
+        const img = new Image()
+        img.onload = () => resolve(img)
+        img.onerror = reject
+        img.crossOrigin = 'anonymous' // на всяк випадок, якщо коли-небудь буде інший домен
+        img.src = src
+        })
+    }
+    const tlsImage = await loadImage('img/base_logo_v2.png')
+
+    // Створюємо PDF: розміри 10 см x 7.5 см (1 см ≈ 28.346 pt)
+    const doc = new jsPDF({
+        unit: "pt",
+        format: [toPt(63.5), toPt(72)], // 10x7.5 см
+        orientation: "landscape",
+    });
+
+    const pageWidth = doc.internal.pageSize.getWidth()
+    const maxTextWidth = pageWidth - toPt(6)
+
+    for (let i = 0; i < totalBoxes; i++) {
+        const isLastPage = (i === totalBoxes - 1);
+        const currentBoxQuantity = isLastPage && remainedQuantity !== 0 ? remainedQuantity : inBoxQuantity
+
+        doc.setFont("Arial", "normal")   
+        doc.setFontSize(15)
+        const wrappedText = doc.splitTextToSize(projectName, maxTextWidth)
+        doc.setFont("Arial", "bold")
+        doc.setFontSize(15)
+        doc.text(wrappedText, pageWidth / 2, toPt(29), {align: "center"})
+        doc.setFont("Arial", "normal")
+        doc.setFontSize(13)
+        doc.text(productCode, pageWidth / 2, toPt(43), {align: "center"})
+        doc.text(`PO# ${tlsOrder}`, toPt(3), toPt(53))
+        doc.setFont("Arial", "bold")
+        doc.setFontSize(15)
+        doc.text(`Q-ty: ${currentBoxQuantity}`, toPt(3), toPt(60))
+
+        doc.text(`${i+1}/${totalBoxes}`, toPt(69), toPt(60), { align: "right" })
+        doc.addImage(tlsImage, "webp", toPt(12), toPt(3), toPt(47), toPt(17.5))
+        
+        if (i < totalBoxes - 1) {
+            doc.addPage(); // Додає нову сторінку, крім останньої
+        }
+    }
+    doc.save(`${tlsOrder}_${projectName}_Outer carton label.pdf`);
 }

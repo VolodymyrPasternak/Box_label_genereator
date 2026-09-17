@@ -31,6 +31,7 @@
                     <label class="labels__template" for="assa">Assa Abloy<input type="radio" id="assa" name="template" value="assa" checked></label>
                     <label class="labels__template" for="tls">Vullpo<input type="radio" id="tls" name="template" value="tls"></label>
                     <label class="labels__template" for="ncl">NCL<input type="radio" id="ncl" name="template" value="ncl"></label>
+                    <label class="labels__template" for="base">Base<input type="radio" id="base" name="template" value="base"></label>
                 </div>
                 <div class="labels__form assa isShow">
                     <label class="labels__label">
@@ -71,6 +72,10 @@
                     </label>
                 </div>
                  <div class="labels__form tls">
+                    <div class="labels__sizes">
+                        <label class="labels__template" for="tls-100x80">100mmx80mm<input type="radio" id="tls-100x80" name="tls-size" value="100x80" checked></label>
+                        <label class="labels__template" for="tls-63x72">63.5mmx72mm<input type="radio" id="tls-63x72" name="tls-size" value="63x72"></label>
+                    </div>
                     <label class="labels__label">
                         Enter project name:
                         <input class="labels__field" type="text" id="tls-projectName" placeholder="Enter project name:" />
@@ -132,6 +137,41 @@
                     <label class="labels__label">
                         Enter total items quantity:
                         <input class="labels__field" type="text" id="ncl-quantityInOrder" placeholder="Enter total items quantity (pcs.):"/>
+                    </label>
+                </div>
+                 <div class="labels__form base">
+                    <div class="labels__sizes">
+                        <label class="labels__template" for="base-100x80">100mmx80mm<input type="radio" id="base-100x80" name="base-size" value="100x80" checked></label>
+                        <label class="labels__template" for="base-63x72">63.5mmx72mm<input type="radio" id="base-63x72" name="base-size" value="63x72"></label>
+                    </div>
+                    <label class="labels__label">
+                        Enter project name:
+                        <input class="labels__field" type="text" id="base-projectName" placeholder="Enter project name:" />
+                    </label>
+
+                    <label class="labels__label">
+                        Enter product code:
+                        <input class="labels__field" type="text" id="base-productCode" placeholder="Enter product code:" />
+                    </label>
+
+                    <label class="labels__label">
+                        Enter Vullpo PO number:
+                        <input class="labels__field" type="text" id="base-tlsOrder" placeholder="Enter Vullpo order number:" />
+                    </label>
+
+                    <label class="labels__label">
+                        Enter items quantity in a inner box:
+                        <input class="labels__field" type="text" id="base-innerBoxQuantity" placeholder="Enter items quantity in a inner box (pcs.):" value="2000"/>
+                    </label>
+
+                    <label class="labels__label">
+                        Enter items quantity in a box:
+                        <input class="labels__field" type="text" id="base-outerBoxQuantity" placeholder="Enter items quantity in a box (pcs.):" value="10000"/>
+                    </label>
+
+                    <label class="labels__label">
+                        Enter total items quantity:
+                        <input class="labels__field" type="text" id="base-quantityInOrder" placeholder="Enter total items quantity (pcs.):"/>
                     </label>
                 </div>
                 <div class="labels__buttons">
